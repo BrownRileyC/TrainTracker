@@ -12,6 +12,7 @@ $(document).ready(function () {
 
     var database = firebase.database();
     var trainNumber = 0;
+    var keyArray = [];
 
 
     $('.submitButton').on('click', function () {
@@ -31,5 +32,40 @@ $(document).ready(function () {
             dateAdded: firebase.database.ServerValue.TIMESTAMP
         });
 
+        $('#enterTrainName').val('');
+        $('#enterDestination').val("");
+        $('#enterStartTime').val("");
+        $('#enterFrequency').val("");
+
     });
+
+    database.ref().on("child_added", function (snapshot) {
+        var sv = snapshot.val();
+        keyArray.push(snapshot.key);
+        console.log(keyArray);
+        var now = moment();
+        var a = moment(now.d).format('x');
+        console.log(a);
+        console.log(sv.dateAdded);
+        sv.dateAdded
+
+        var newRow = $('<tr>').appendTo('.myTable').addClass('row' + trainNumber);
+        var trainName = $('<td>');
+        var destination = $('<td>');
+        var startTime = $('<td>');
+        var frequency = $('<td>');
+        trainName.text(sv.name);
+        destination.text(sv.destination);
+        startTime.text(sv.start);
+        frequency.text(sv.frequency);
+        newRow.append(trainName, destination, startTime, frequency);
+
+        trainNumber++;
+
+
+
+    }, function (errorObject) {
+        alert("I fucked up man");
+    });
+
 });
