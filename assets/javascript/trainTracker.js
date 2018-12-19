@@ -20,14 +20,13 @@ $(document).ready(function () {
 
         var newTrainName = $('#enterTrainName').val().trim();
         var newDestination = $('#enterDestination').val().trim();
-        var newStartTime = $('#enterStartTime').val().trim();
+        var newDeparture = $('#enterStartTime').val().trim();
         var newFrequency = $('#enterFrequency').val().trim();
-
 
         database.ref().push({
             name: newTrainName,
             destination: newDestination,
-            start: newStartTime,
+            departure: newDeparture,
             frequency: newFrequency,
             dateAdded: firebase.database.ServerValue.TIMESTAMP
         });
@@ -42,23 +41,36 @@ $(document).ready(function () {
     database.ref().on("child_added", function (snapshot) {
         var sv = snapshot.val();
         keyArray.push(snapshot.key);
-        console.log(keyArray);
-        var now = moment();
-        var a = moment(now.d).format('x');
-        console.log(a);
-        console.log(sv.dateAdded);
-        sv.dateAdded
+        console.log(keyArray);        
+
+        var now = moment().format("HH:mm");
+        var a = moment(now, "HH:mm");
+        var b = moment(sv.departure, "HH:mm");
+        b.add(sv.frequency, 'm');
+        console.log("a: "+a);
+        console.log("b: "+b);
+        var difference = b.diff(a, 'm');
+
+        while (difference < 1) {
+            b.add(sv.frequency, 'm');
+            difference = b.diff(a, 'm');
+        };
+        var nextArrival = moment(b).format("HH:mm");
+        console.log(nextArrival);
+        console.log("difference: "+difference);
 
         var newRow = $('<tr>').appendTo('.myTable').addClass('row' + trainNumber);
         var trainName = $('<td>');
         var destination = $('<td>');
-        var startTime = $('<td>');
+        var arrival = $('<td>');
         var frequency = $('<td>');
+        var minutesAway = $('<td>');
         trainName.text(sv.name);
         destination.text(sv.destination);
-        startTime.text(sv.start);
+        arrival.text(nextArrival);
+        minutesAway.text(difference);
         frequency.text(sv.frequency);
-        newRow.append(trainName, destination, startTime, frequency);
+        newRow.append(trainName, destination, frequency, arrival, minutesAway);
 
         trainNumber++;
 
