@@ -44,8 +44,7 @@ $(document).ready(function () {
 
     database.ref().on("child_added", function (snapshot) {
         var sv = snapshot.val();
-        keyArray.push(snapshot.key);
-        console.log(keyArray);        
+        keyArray.push(snapshot.key);       
 
         var now = moment().format("HH:mm");
         var a = moment(now, "HH:mm");
@@ -84,15 +83,11 @@ $(document).ready(function () {
         for (var i = 0; i < differenceArray.length; i ++) {
             var newDifference = parseInt(differenceArray[i])-1;
             if (newDifference === 0){
-                console.log("The If Happened")
                 newDifference = parseInt(frequencyArray[i]);
                 var oldArrival = $('.arrival'+i).html();
-                console.log("old arrival"+oldArrival);
                 var newarrival = moment(oldArrival, "HH:mm");
-                console.log("moment object"+newarrival);
                 newarrival.add(frequencyArray[i],'m');
                 var finalArrival = moment(newarrival).format('HH:mm');
-                console.log("SHould be the new time"+finalArrival);
                 $('.arrival'+i).text(finalArrival);
             }
             differenceArray.splice(i, 1, newDifference);
